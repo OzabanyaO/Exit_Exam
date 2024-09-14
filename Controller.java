@@ -1,33 +1,51 @@
-public class Controller {
-    private View view;        
-    private Model model;
+import javax.swing.JOptionPane;
 
-    public Controller(View view, Model model) {
-        this.view = view;
+public class Controller {
+    private Model model;
+    private InputView inputView;
+    private MilkCowView milkCowView;
+
+    public Controller(Model model) {
         this.model = model;
+        this.inputView = new InputView(this);
     }
 
-    // ค้นหาวัวตาม id
     public void searchCow(String id) {
         Cow cow = model.getCowById(id);
-        view.displayCowInfo(cow);
-    }
-
-    public void milkCow(boolean addLemon) {
-        String id = view.getIdFieldText();
-        Cow cow = model.getCowById(id);
-        if (cow != null && !cow.isBSOD()) {
-            model.milkCow(cow, addLemon);
-            view.displayMilkResult("Milk produced: " + cow.produceMilk(addLemon));
-        } else if (cow != null && cow.isBSOD()) {
-            view.displayMilkResult("Cannot produce milk (BSOD).");
+        if (cow != null) {
+            if (milkCowView != null) {
+                milkCowView.dispose();
+            }
+            milkCowView = new MilkCowView(cow, this);
+        } else {
+            JOptionPane.showMessageDialog(inputView, "Cow with ID " + id + " not found", "Error", JOptionPane.ERROR_MESSAGE);
         }
-        view.updateReport(model.getReport());
     }
 
-    // Reset วัวที่เป็น BSOD
+    public String milkCow(boolean addLemon) {
+        Cow cow = model.getCowById(inputView.getIdFieldText());
+        if (cow != null) {
+            return model.milkCow(cow, addLemon);
+        }
+        return "";
+    }
+
     public void resetBSODCows() {
         model.resetBSODCows();
-        view.updateReport(model.getReport());
+        milkCowView.updateCowInfo(model.getCowById(milkCowView.getCowId()), "BSOD Cows Reset");
+        JOptionPane.showMessageDialog(milkCowView, model.getReport());
+    }
+
+    public String getReport() {
+        return model.getReport();
+    }
+
+    public void showInputView() {
+        inputView.setVisible(true);
+    }
+
+    public Model getModel() {
+        return model;
     }
 }
+

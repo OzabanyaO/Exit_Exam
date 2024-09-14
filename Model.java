@@ -5,20 +5,22 @@ import java.util.Scanner;
 
 public class Model {
     private List<Cow> cows;
-    String filePath;
-
-    // Track the total number of each type of milk produced
-    private int plainMilkCount = 0;
-    private int sourMilkCount = 0;
-    private int chocolateMilkCount = 0;
+    private int totalPlainMilk;
+    private int totalSourMilk;
+    private int totalChocolateMilk;
+    private int totalSoyMilk;
+    private int totalAlmondMilk;
+    private String filePath;
 
     public Model(String csvFilePath) {
         this.cows = new ArrayList<>();
         this.filePath = csvFilePath;
+        this.totalPlainMilk = 0;
+        this.totalSourMilk = 0;
+        this.totalChocolateMilk = 0;
+        this.totalSoyMilk = 0;
+        this.totalAlmondMilk = 0;
         readCowsFromCSV();
-        for (Cow cow : cows) {
-            System.out.println(cow.getId());
-        }
     }
 
     // อ่านข้อมูลวัวจากไฟล์ CSV
@@ -51,28 +53,25 @@ public class Model {
         return null;
     }
 
-    public void milkCow(Cow cow, boolean addLemon) {
-        if (cow == null) return;
-
-        String result = cow.produceMilk(addLemon);
-        switch (result) {
-            case "Plain milk":
-                plainMilkCount++;
-                break;
-            case "Sour milk":
-                sourMilkCount++;
-                break;
-            case "Chocolate milk":
-                chocolateMilkCount++;
-                break;
-            case "Soy milk (BSOD)":
-            case "Almond milk (BSOD)":
-                cow.reset(); // Reset cow state
-                break;
+    // เพิ่มข้อมูลการผลิตนม
+    public String milkCow(Cow cow, boolean addLemon) {
+        String milk = cow.produceMilk(addLemon);
+        if (milk.equals("Plain milk")) {
+            totalPlainMilk++;
+        } else if (milk.equals("Sour milk")) {
+            totalSourMilk++;
+        } else if (milk.equals("Chocolate milk")) {
+            totalChocolateMilk++;
+        } else if (milk.equals("Soy milk (BSOD)")) {
+            totalSoyMilk++;
+        } else if (milk.equals("Almond milk (BSOD)")) {
+            totalAlmondMilk++;
         }
+        return milk;
     }
 
-    //reset BSOD
+
+    // เพิ่มข้อมูลการรีเซ็ต BSOD
     public void resetBSODCows() {
         for (Cow cow : cows) {
             if (cow.isBSOD()) {
@@ -83,8 +82,11 @@ public class Model {
 
     //แสดงรายงาน
     public String getReport() {
-        return String.format("Plain Milk: %d\nSour Milk: %d\nChocolate Milk: %d\nTotal: %d\n", 
-                plainMilkCount, sourMilkCount, chocolateMilkCount, plainMilkCount + sourMilkCount + chocolateMilkCount);
+        return "Total Plain Milk: " + totalPlainMilk + "\n" +
+               "Total Sour Milk: " + totalSourMilk + "\n" +
+               "Total Chocolate Milk: " + totalChocolateMilk + "\n" +
+               "Total Soy Milk: " + totalSoyMilk + "\n" +
+               "Total Almond Milk: " + totalAlmondMilk;
     }
 }
 
@@ -108,6 +110,8 @@ class Cow {
     public int getAgeYear() { return ageYear; }
     public int getAgeMonth() { return ageMonth; }
     public boolean isBSOD() { return isBSOD; }
+
+    public void setBSOD(boolean isBSOD) { this.isBSOD = isBSOD; }
 
     public String produceMilk(boolean addLemon) {
         if (isBSOD) return "Cannot produce milk (BSOD)";
