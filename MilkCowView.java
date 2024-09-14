@@ -18,6 +18,7 @@ public class MilkCowView extends JFrame {
         initialize();
     }
 
+    // Initializes the MilkCowFrame layout and components.
     private void initialize() {
         setTitle("Cow Milk Production");
         setLayout(new BorderLayout());
@@ -34,17 +35,7 @@ public class MilkCowView extends JFrame {
         milkButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String result;
-                if (cow.getBreast().equals("white")) {
-                    // int option = JOptionPane.showConfirmDialog(null, "Add lemon?", "Add Lemon", JOptionPane.YES_NO_OPTION);
-                    // if (option == JOptionPane.YES_OPTION) {
-                        result = controller.milkCow(true); // Milk with lemon
-                    // } else {
-                        result = controller.milkCow(false); // Milk without lemon
-                    // }
-                } else {
-                    result = controller.milkCow(false); // Milk without lemon for non-white cows
-                }
+                String result = controller.milkCow(false); // Milk
                 updateCowInfo(cow, result);
             }
         });
